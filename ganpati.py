@@ -16,7 +16,7 @@ if hasattr(sys.stdout, "reconfigure"):
 if os.name == "nt":
     os.system("chcp 65001 > nul")
 
-DOT = "●"
+DOT = "⣿"  # dense 8-dot Braille cell: much clearer than a single round dot
 RESET = "\x1b[0m"
 
 def clear():
@@ -30,13 +30,13 @@ def fit_for_terminal(img):
     width = max(50, min(100, cols - 2))
     # terminal cells are taller than wide, so compensate vertically
     ratio = img.height / img.width
-    height = max(1, int(width * ratio * 0.50))
+    height = max(1, int(width * ratio * 0.48))
     return img.resize((width, height), Image.Resampling.LANCZOS)
 
 def pixel_dot(r, g, b):
     return f"\x1b[38;2;{r};{g};{b}m{DOT}{RESET}"
 
-def render_slow(img, delay=0.035):
+def render_slow(img, delay=0.022):
     px = img.load()
     w, h = img.size
     clear()
@@ -46,14 +46,14 @@ def render_slow(img, delay=0.035):
         for x in range(w):
             r, g, b = px[x, y]
             row.append(pixel_dot(r, g, b))
-        print("".join(row), flush=True)
+        print("".join(row) + RESET, flush=True)
         time.sleep(delay)
     time.sleep(0.35)
     print("\n\x1b[38;2;255;190;40mॐ गं गणपतये नमः\x1b[0m")
     print("\x1b[38;2;255;110;40mगणपति बप्पा मोरया 🙏\x1b[0m")
 
 def main():
-    delay = 0.035
+    delay = 0.022
     if len(sys.argv) > 1:
         try:
             delay = max(0.0, float(sys.argv[1]))
