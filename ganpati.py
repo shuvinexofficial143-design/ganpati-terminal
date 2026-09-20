@@ -28,13 +28,15 @@ def load_image():
     mask = Image.open(io.BytesIO(base64.b64decode(MASK_B64))).convert("L")
     return img, mask
 
-def fit_for_terminal(img):
-    cols = shutil.get_terminal_size((110, 40)).columns
-    width = max(50, min(100, cols - 2))
-    # terminal cells are taller than wide, so compensate vertically
+def fit_for_terminal(img, mask):
+    cols = shutil.get_terminal_size((140, 45)).columns
+    width = max(70, min(120, cols - 2))
     ratio = img.height / img.width
     height = max(1, int(width * ratio * 0.48))
-    return img.resize((width, height), Image.Resampling.LANCZOS)
+    size = (width, height)
+    img = img.resize(size, Image.Resampling.LANCZOS)
+    mask = mask.resize(size, Image.Resampling.NEAREST)
+    return img, mask
 
 def pixel_dot(r, g, b):
     return f"\x1b[38;2;{r};{g};{b}m{DOT}{RESET}"
